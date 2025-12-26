@@ -1,0 +1,35 @@
+{
+  "json.schemas": [
+    // ================================================
+    // BEHAVIOR PACKS - Toggle V2/V3 URL
+    // ================================================
+    {
+      "fileMatch": [
+        "*behavior*pack*/manifest.json",
+        "*behavior*pack*/manifest.jsonc",
+        "*behavior*pack*/manifest.json5",
+        "*BP*/manifest.json",
+        "*BP*/manifest.jsonc",
+        "*BP*/manifest.json5"
+      ],
+      // "url": "https://raw.githubusercontent.com/LeChatOTapas/minecraft-bedrock-json-schemas/main/behavior_packs/manifest.schema.json"        // V2 (Stable)
+      "url": "https://raw.githubusercontent.com/LeChatOTapas/minecraft-bedrock-json-schemas/main/behavior_packs/manifest-v3.schema.json" // V3 (Experimental)
+    },
+
+    // ================================================
+    // RESOURCE PACKS - Toggle V2/V3 URL
+    // ================================================
+    {
+      "fileMatch": [
+        "*resource*pack*/manifest.json",
+        "*resource*pack*/manifest.jsonc",
+        "*resource*pack*/manifest.json5",
+        "*RP*/manifest.json",
+        "*RP*/manifest.jsonc",
+        "*RP*/manifest.json5"
+      ],
+      // "url": "https://raw.githubusercontent.com/LeChatOTapas/minecraft-bedrock-json-schemas/main/resource_packs/manifest.schema.json"        // V2 (Stable)
+      "url": "https://raw.githubusercontent.com/LeChatOTapas/minecraft-bedrock-json-schemas/main/resource_packs/manifest-v3.schema.json" // V3 (Experimental)
+    }
+  ]
+}
