@@ -28,24 +28,6 @@ This project provides JSON schemas that enable:
 1. Copy [vscode-settings.json](vscode-settings.json) into your workspace `.vscode` folder
 2. Rename it to `settings.json`
 
-**OR**
-
-Copy the contents into your `.code-workspace` file:
-
-```json
-{
-  "folders": [{ "path": "." }],
-  "settings": {
-    "json.schemas": [
-      {
-        "fileMatch": ["manifest.json", "manifest.jsonc", "manifest.json5"],
-        "url": "https://raw.githubusercontent.com/LeChatOTapas/minecraft-bedrock-json-schemas/main/behavior_packs/manifest.schema.json"
-      }
-    ]
-  }
-}
-```
-
 The schemas will automatically apply to matching files in your workspace.
 
 ### Option 2: Per-File Reference
