@@ -1,0 +1,382 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/behavior_packs/manifest-v3.schema.json",
+  "title": "Minecraft Bedrock Behavior Pack Manifest (V3 - Experimental)",
+  "description": "Manifest schema for Minecraft Bedrock Edition behavior packs using format_version 3 (experimental). Requires semver strings for all versions and metadata.authors property.",
+  "type": "object",
+  "required": ["format_version", "header", "modules", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "format_version": {
+      "type": "integer",
+      "const": 3,
+      "description": "Manifest format version 3 (experimental)"
+    },
+    "header": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "uuid",
+        "version",
+        "min_engine_version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the behavior pack"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short description of the pack"
+        },
+        "uuid": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          "description": "Unique identifier for the pack",
+          "defaultSnippets": [
+            {
+              "label": "New UUID",
+              "body": "$UUID"
+            }
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "description": "Version of the pack in semver format (e.g., '1.0.0')"
+        },
+        "min_engine_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "description": "Minimum engine version required in semver format (e.g., '1.21.110')"
+        },
+        "base_game_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "description": "Base game version for world templates in semver format"
+        },
+        "allow_random_seed": {
+          "type": "boolean",
+          "description": "Allow random seed generation (world template only)"
+        },
+        "lock_template_options": {
+          "type": "boolean",
+          "description": "Lock world options from modification (world template only)"
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of modules included in this pack",
+      "items": {
+        "type": "object",
+        "required": ["type", "uuid", "version"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["data", "client_data", "script", "world_template"],
+            "description": "Type of module: data (server-side), client_data (client-side), script (JavaScript), world_template"
+          },
+          "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "description": "Unique identifier for this module",
+            "defaultSnippets": [
+              {
+                "label": "New UUID",
+                "body": "$UUID"
+              }
+            ]
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+            "description": "Module version in semver format (e.g., '1.0.0')"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the module"
+          },
+          "language": {
+            "type": "string",
+            "const": "javascript",
+            "description": "Programming language for script modules (required when type is 'script')"
+          },
+          "entry": {
+            "type": "string",
+            "description": "Entry point for script modules (e.g., 'scripts/main.js')"
+          }
+        },
+        "if": {
+          "properties": {
+            "type": {
+              "const": "script"
+            }
+          },
+          "required": ["type"]
+        },
+        "then": {
+          "required": ["language"]
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "List of dependencies required by this pack",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["uuid", "version"],
+            "additionalProperties": false,
+            "description": "UUID-based dependency (for other packs)",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "description": "UUID of the required pack",
+                "defaultSnippets": [
+                  {
+                    "label": "New UUID",
+                    "body": "$UUID"
+                  }
+                ]
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+                "description": "Required version in semver format (e.g., '1.0.0')"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["module_name", "version"],
+            "additionalProperties": false,
+            "description": "Module name-based dependency (for @minecraft modules)",
+            "properties": {
+              "module_name": {
+                "type": "string",
+                "pattern": "^@minecraft/[a-z0-9_-]+$",
+                "description": "Name of the @minecraft module (e.g., '@minecraft/server')"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+                "description": "Required version in semver format (e.g., '2.3.0-beta')"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "settings": {
+      "type": "array",
+      "description": "Custom pack settings (experimental, V3 behavior packs only)",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["type", "text"],
+            "additionalProperties": false,
+            "description": "Label setting - read-only text",
+            "properties": {
+              "type": {
+                "const": "label",
+                "description": "Label type for display text"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text to display (supports § formatting codes)"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["type", "text", "name", "default"],
+            "additionalProperties": false,
+            "description": "Toggle setting - boolean switch",
+            "properties": {
+              "type": {
+                "const": "toggle",
+                "description": "Toggle type for boolean switch"
+              },
+              "text": {
+                "type": "string",
+                "description": "User-visible label for the toggle"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+:[a-z0-9_]+$",
+                "description": "Programmatic identifier in namespace:name format (e.g., 'mypack:setting_name')"
+              },
+              "default": {
+                "type": "boolean",
+                "description": "Default value (true or false)"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "text",
+              "name",
+              "min",
+              "max",
+              "step",
+              "default"
+            ],
+            "additionalProperties": false,
+            "description": "Slider setting - number within a range",
+            "properties": {
+              "type": {
+                "const": "slider",
+                "description": "Slider type for numeric range"
+              },
+              "text": {
+                "type": "string",
+                "description": "User-visible label for the slider"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+:[a-z0-9_]+$",
+                "description": "Programmatic identifier in namespace:name format (e.g., 'mypack:setting_name')"
+              },
+              "min": {
+                "type": "number",
+                "description": "Minimum value"
+              },
+              "max": {
+                "type": "number",
+                "description": "Maximum value"
+              },
+              "step": {
+                "type": "number",
+                "description": "Increment step"
+              },
+              "default": {
+                "type": "number",
+                "description": "Default value"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["type", "text", "name", "options", "default"],
+            "additionalProperties": false,
+            "description": "Dropdown setting - choice between options",
+            "properties": {
+              "type": {
+                "const": "dropdown",
+                "description": "Dropdown type for multiple choice"
+              },
+              "text": {
+                "type": "string",
+                "description": "User-visible label for the dropdown"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+:[a-z0-9_]+$",
+                "description": "Programmatic identifier in namespace:name format (e.g., 'mypack:setting_name')"
+              },
+              "options": {
+                "type": "array",
+                "minItems": 1,
+                "description": "List of available options",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "text"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Internal option identifier"
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "User-visible option text"
+                    }
+                  }
+                }
+              },
+              "default": {
+                "type": "string",
+                "description": "Default option name (must match one of the option names)"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Optional features enabled in this pack",
+      "items": {
+        "type": "string",
+        "enum": [
+          "chemistry",
+          "editorExtension",
+          "experimental_custom_ui",
+          "raytraced"
+        ],
+        "description": "Capability flags: chemistry, editorExtension, experimental_custom_ui, raytraced"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["authors"],
+      "additionalProperties": false,
+      "description": "Metadata about the pack (authors required in V3 due to temporary bug)",
+      "properties": {
+        "authors": {
+          "type": "array",
+          "minItems": 1,
+          "description": "List of pack authors (required in V3)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "license": {
+          "type": "string",
+          "description": "License identifier (e.g., 'MIT')"
+        },
+        "url": {
+          "type": "string",
+          "description": "Home website of the pack"
+        },
+        "product_type": {
+          "type": "string",
+          "enum": ["addon"],
+          "description": "Product type, typically 'addon' for player-installable packs"
+        },
+        "generated_with": {
+          "type": "object",
+          "description": "Tools used to generate this manifest",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]{1,32}$": {
+              "type": "array",
+              "minItems": 1,
+              "description": "Array of semver versions for each tool",
+              "items": {
+                "type": "string",
+                "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}
